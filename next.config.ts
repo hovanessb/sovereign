@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // @ts-ignore - Turbopack root config for monorepo-like structures
+  turbopack: {
+    root: "./",
+  },
 };
 
 export default nextConfig;

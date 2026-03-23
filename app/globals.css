@@ -1,26 +1,502 @@
 @import "tailwindcss";
+@config "../tailwind.config.ts";
 
+/* ─── CSS Custom Properties ──────────────────────────────────────────────────
+   Single source of truth for all brand tokens.
+   Tailwind config references these via var(--...) where needed.
+   ─────────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    /* Palette */
+    --color-obsidian: #050505;
+    --color-obsidian-50: #0d0d0d;
+    --color-obsidian-100: #111111;
+    --color-obsidian-200: #1a1a1a;
+    --color-obsidian-300: #222222;
+    --color-charcoal: #1c1c1c;
+    --color-charcoal-light: #2a2a2a;
+    --color-charcoal-muted: #3d3d3d;
+    --color-ivory: #ece8e1;
+    --color-ash: #7a7a7a;
+    --color-smoke: #2d2d2d;
+
+    /* Gold spectrum */
+    --color-gold-whisper: #c8a96e;
+    --color-gold-soft: #d4a853;
+    --color-gold: #c9922a;
+    --color-gold-warm: #e2a840;
+    --color-gold-bright: #f0c060;
+    --color-gold-forge: #ff9500;
+    --color-gold-molten: #ff6a00;
+
+    /* Gradients */
+    --gradient-gold-linear: linear-gradient(135deg, #c8a96e 0%, #f0c060 40%, #c9922a 70%, #8b5e1a 100%);
+    --gradient-gold-radial: radial-gradient(ellipse at center, #e2a840 0%, #c9922a 45%, #050505 100%);
+
+    /* Typography */
+    --font-spectral: "Spectral", Georgia, serif;
+    --font-geist-sans: "Geist Sans", system-ui, sans-serif;
+    --font-geist-mono: "Geist Mono", monospace;
+
+    /* Letter spacing */
+    --tracking-sovereign: 0.2em;
+    --tracking-ultrawide: 0.35em;
+    --tracking-vault: 0.15em;
+
+    /* Transitions */
+    --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-cinematic: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Base Reset & Defaults ──────────────────────────────────────────────────
+   Everything defaults to the BARTAMIAN aesthetic. No element should look
+   "browser-default" at any point in the rendering cycle.
+   ─────────────────────────────────────────────────────────────────────────── */
+@layer base {
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html {
+        background-color: var(--color-obsidian);
+        color: var(--color-ivory);
+        font-family: var(--font-geist-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+        scroll-behavior: smooth;
+
+        /* Prevent flash of white on page load */
+        color-scheme: dark;
+    }
+
+    body {
+        background-color: var(--color-obsidian);
+        color: var(--color-ivory);
+        min-height: 100dvh;
+        overflow-x: hidden;
+
+        /* Refined scrollbar — visible but invisible */
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-gold) var(--color-obsidian-100);
+    }
+
+    /* Custom scrollbar — WebKit */
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--color-obsidian-100);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(to bottom,
+                var(--color-gold-whisper),
+                var(--color-gold));
+        border-radius: 0;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-gold-bright);
+    }
+
+    /* Focus — gold outline, no browser default blue */
+    :focus-visible {
+        outline: 1px solid var(--color-gold);
+        outline-offset: 3px;
+    }
+
+    :focus:not(:focus-visible) {
+        outline: none;
+    }
+
+    /* Text selection */
+    ::selection {
+        background-color: rgba(201, 146, 42, 0.25);
+        color: var(--color-gold-bright);
+    }
+
+    /* ── Typography Defaults ──────────────────────────────────────────────── */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-spectral);
+        font-weight: 700;
+        line-height: 1.1;
+        color: var(--color-ivory);
+    }
+
+    p {
+        font-family: var(--font-geist-sans);
+        font-weight: 300;
+        line-height: 1.7;
+        color: var(--color-ash);
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    img,
+    video {
+        display: block;
+        max-width: 100%;
+    }
+
+    button {
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-family: inherit;
+        color: inherit;
+    }
+
+    /* Remove default list styling */
+    ul,
+    ol {
+        list-style: none;
+    }
+
+    /* Horizontal rules — gold hairline */
+    hr {
+        border: none;
+        height: 1px;
+        background: linear-gradient(to right,
+                transparent,
+                rgba(201, 146, 42, 0.4),
+                transparent);
+    }
+
+    /* Table defaults */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    /* Code / mono */
+    code,
+    kbd,
+    samp,
+    pre {
+        font-family: var(--font-geist-mono);
+        font-size: 0.875em;
+    }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Component Layer ────────────────────────────────────────────────────────
+   Reusable styled primitives not covered by Tailwind utilities.
+   ─────────────────────────────────────────────────────────────────────────── */
+@layer components {
+
+    /* ── Gold shimmer text ────────────────────────────────────────────────── */
+    .text-gold-shimmer {
+        background: var(--gradient-gold-linear);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 3s linear infinite;
+    }
+
+    /* ── Metallic border card ─────────────────────────────────────────────── */
+    .card-vault {
+        background-color: var(--color-obsidian-200);
+        border: 1px solid rgba(201, 146, 42, 0.15);
+        box-shadow:
+            0 4px 40px rgba(0, 0, 0, 0.7),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        transition:
+            border-color 0.4s var(--ease-expo),
+            box-shadow 0.4s var(--ease-expo);
+    }
+
+    .card-vault:hover {
+        border-color: rgba(201, 146, 42, 0.4);
+        box-shadow:
+            0 4px 40px rgba(0, 0, 0, 0.7),
+            0 0 30px rgba(201, 146, 42, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    }
+
+    /* ── CTA button — primary gold ────────────────────────────────────────── */
+    .btn-sovereign {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 2rem;
+        font-family: var(--font-geist-sans);
+        font-size: 0.6875rem;
+        font-weight: 500;
+        letter-spacing: var(--tracking-vault);
+        text-transform: uppercase;
+        color: var(--color-obsidian);
+        background: var(--gradient-gold-linear);
+        background-size: 200% auto;
+        box-shadow: 0 0 12px rgba(201, 146, 42, 0.25);
+        transition:
+            background-position 0.6s ease,
+            box-shadow 0.3s ease;
+    }
+
+    .btn-sovereign:hover {
+        background-position: right center;
+        box-shadow: 0 0 30px rgba(201, 146, 42, 0.4);
+    }
+
+    /* ── Ghost button — secondary ─────────────────────────────────────────── */
+    .btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 2rem;
+        font-family: var(--font-geist-sans);
+        font-size: 0.6875rem;
+        font-weight: 400;
+        letter-spacing: var(--tracking-vault);
+        text-transform: uppercase;
+        color: var(--color-ash);
+        border: 1px solid rgba(201, 146, 42, 0.2);
+        transition:
+            color 0.3s ease,
+            border-color 0.3s ease;
+    }
+
+    .btn-ghost:hover {
+        color: var(--color-ivory);
+        border-color: rgba(201, 146, 42, 0.5);
+    }
+
+    /* ── Section label ────────────────────────────────────────────────────── */
+    .label-section {
+        font-family: var(--font-geist-mono);
+        font-size: 0.625rem;
+        letter-spacing: var(--tracking-ultrawide);
+        text-transform: uppercase;
+        color: var(--color-gold);
+        opacity: 0.8;
+    }
+
+    /* ── Gold hairline rule ───────────────────────────────────────────────── */
+    .rule-gold {
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(to right,
+                transparent,
+                rgba(201, 146, 42, 0.5),
+                transparent);
+    }
+
+    /* ── Purity badge ─────────────────────────────────────────────────────── */
+    .badge-purity {
+        display: inline-flex;
+        padding: 0.2rem 0.5rem;
+        font-family: var(--font-geist-mono);
+        font-size: 0.5625rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-gold);
+        border: 1px solid rgba(201, 146, 42, 0.4);
+        background: rgba(5, 5, 5, 0.7);
+        backdrop-filter: blur(4px);
+    }
+
+    /* ── Animated forge glow ──────────────────────────────────────────────── */
+    .glow-forge {
+        box-shadow:
+            0 0 80px rgba(255, 106, 0, 0.45),
+            0 0 160px rgba(201, 146, 42, 0.2);
+    }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Utility Layer ──────────────────────────────────────────────────────────
+   One-off utilities that Tailwind's JIT doesn't generate by default.
+   ─────────────────────────────────────────────────────────────────────────── */
+@layer utilities {
+
+    /* Hide scrollbar while keeping scroll functionality */
+    .scrollbar-none {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-none::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Prevent FOUC on video elements */
+    .video-cover {
+        object-fit: cover;
+        object-position: center;
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Clip text for multi-line truncation */
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .line-clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* GPU compositing hint for animated elements */
+    .will-change-transform {
+        will-change: transform;
+    }
+
+    .will-change-opacity {
+        will-change: opacity;
+    }
+
+    /* Noise grain overlay (reusable) */
+    .texture-grain {
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+        background-repeat: repeat;
+        background-size: 128px 128px;
+    }
+
+    /* Full-bleed section helper */
+    .full-bleed {
+        width: 100vw;
+        position: relative;
+        left: 50%;
+        right: 50%;
+        margin-left: -50vw;
+        margin-right: -50vw;
+    }
+
+    /* Animate gold border flow */
+    .border-animated {
+        background: linear-gradient(90deg,
+                transparent,
+                rgba(201, 146, 42, 0.6),
+                transparent);
+        background-size: 200% 100%;
+        animation: border-flow 4s linear infinite;
+    }
+}
+
+/* ─── Global Keyframes ───────────────────────────────────────────────────────
+   Defined here (not just in Tailwind config) so CSS-only components
+   and non-Tailwind elements can reference them directly.
+   ─────────────────────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+    0% {
+        background-position: -200% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+@keyframes forge-pulse {
+
+    0%,
+    100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.04);
+    }
+}
+
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes reveal {
+    0% {
+        clip-path: inset(0 100% 0 0);
+    }
+
+    100% {
+        clip-path: inset(0 0% 0 0);
+    }
+}
+
+@keyframes border-flow {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 200% 50%;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes scale-in {
+    0% {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ─── Page Transition ────────────────────────────────────────────────────────
+   Applied to <main> on initial paint to prevent hard frame flash.
+   ─────────────────────────────────────────────────────────────────────────── */
+main {
+    animation: fade-in 0.4s var(--ease-expo) both;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────────────────
+   Respect system preferences. Disable all motion-heavy effects.
+   ─────────────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .text-gold-shimmer {
+        animation: none;
+        background-position: center;
+    }
 }
