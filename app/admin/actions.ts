@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/drizzle/action";
-import { products } from "@/drizzle/schema";
+import { products, siteSettings } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -10,7 +10,7 @@ export async function toggleProductPublication(id: string, isPublished: boolean)
     .update(products)
     .set({ isPublished, updatedAt: new Date() })
     .where(eq(products.id, id));
-  
+
   revalidatePath("/admin/products");
   revalidatePath("/vault");
 }
@@ -18,7 +18,41 @@ export async function toggleProductPublication(id: string, isPublished: boolean)
 export async function deleteProduct(id: string) {
   // Note: productImages has cascade delete in schema
   await db.delete(products).where(eq(products.id, id));
-  
+
   revalidatePath("/admin/products");
   revalidatePath("/vault");
+}
+
+export async function getSiteSettings() {
+  const settings = await db.query.siteSettings.findFirst();
+
+  if (!settings) {
+    // Initialize with defaults if none exist
+    const [newSettings] = await db.insert(siteSettings).values({
+      makingChargePerGram: 25,
+      marginMultiplier: "2.50",
+    }).returning();
+    return newSettings;
+  }
+
+  return settings;
+}
+
+export async function updateSiteSettings(data: {
+  makingChargePerGram: number;
+  marginMultiplier: string;
+}) {
+  const current = await getSiteSettings();
+
+  await db.update(siteSettings)
+    .set({
+      makingChargePerGram: data.makingChargePerGram,
+      marginMultiplier: data.marginMultiplier,
+      updatedAt: new Date(),
+    })
+    .where(eq(siteSettings.id, current.id));
+
+  revalidatePath("/admin");
+  revalidatePath("/");
+  return { success: true };
 }

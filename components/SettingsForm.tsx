@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Save, RefreshCw } from "lucide-react";
-import { updateSiteSettings } from "./settings-actions";
+import { updateSiteSettings } from "@/app/admin/actions";
 
 interface SettingsFormProps {
   initialSettings: {

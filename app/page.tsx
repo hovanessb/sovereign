@@ -6,15 +6,19 @@
  * All other sections are rendered server-side for maximum performance.
  */
 
+export const dynamic = "force-dynamic";
+
 import type { Metadata } from "next";
 import { db } from "@/drizzle/action";
-import { products, productImages } from "@/drizzle/schema";
-import { eq, and, asc, desc } from "drizzle-orm";
+import { products } from "@/drizzle/schema";
+import { eq, asc, desc } from "drizzle-orm";
 
 import Hero from "@/components/Hero";
 import ProcessGallery from "@/components/ProcessGallery";
 import Vault from "@/components/Vault";
 import type { VaultProduct } from "@/lib/types";
+import { getGoldSpotPrice } from "./api/actions/get-gold-spot";
+import { getSiteSettings } from "./admin/actions";
 
 // ─── Page Metadata ────────────────────────────────────────────────────────────
 
@@ -46,8 +50,6 @@ async function getPublishedProducts(): Promise<VaultProduct[]> {
   }
 }
 
-import { getGoldSpotPrice } from "@/app/api/actions/get-gold-spot";
-import { getSiteSettings } from "@/app/admin/settings-actions";
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -79,8 +81,8 @@ export default async function HomePage() {
       <ProcessGallery />
 
       {/* ── 03. The Vault — Shop Grid ──────────────────────────────────────── */}
-      <Vault 
-        initialProducts={initialProducts} 
+      <Vault
+        initialProducts={initialProducts}
         goldSpot={goldSpot}
         settings={settings}
       />

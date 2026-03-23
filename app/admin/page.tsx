@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { Package, ShoppingCart, TrendingUp, AlertCircle } from "lucide-react";
 import { db } from "@/drizzle/action";
@@ -5,17 +7,17 @@ import { products, orders } from "@/drizzle/schema";
 import { count, eq, sql } from "drizzle-orm";
 import { formatPrice } from "@/lib/helpers";
 
-import { SettingsForm } from "./SettingsForm";
-import { getSiteSettings } from "./settings-actions";
+import { SettingsForm } from "@/components/SettingsForm";
+import { getSiteSettings } from "@/app/admin/actions";
 
 export default async function AdminDashboardPage() {
   const [productCount] = await db.select({ value: count() }).from(products);
   const [orderCount] = await db.select({ value: count() }).from(orders);
   const settings = await getSiteSettings();
-  
+
   // Quick revenue calculation
-  const [revenue] = await db.select({ 
-    total: sql<number>`COALESCE(SUM(total_cents), 0)` 
+  const [revenue] = await db.select({
+    total: sql<number>`COALESCE(SUM(total_cents), 0)`
   }).from(orders).where(eq(orders.status, "paid"));
 
   const stats = [
@@ -69,31 +71,31 @@ export default async function AdminDashboardPage() {
         <div className="p-8 bg-white/2 border border-white/10 rounded-2xl space-y-6">
           <h3 className="font-spectral text-xl italic font-semibold">Recent Activity</h3>
           <div className="space-y-4">
-             <ActivityItem 
-               title="New Order Received" 
-               description="Order #8B-9122 by hovaness@bartamian.com" 
-               time="2 hours ago" 
-             />
-             <ActivityItem 
-               title="Product Stock Alert" 
-               description="Square Swallow Ring 18k is down to 3 pieces." 
-               time="5 hours ago" 
-               critical
-             />
-             <ActivityItem 
-               title="Payment Confirmed" 
-               description="Transaction PI_82711 processed via Stripe." 
-               time="Yesterday" 
-             />
+            <ActivityItem
+              title="New Order Received"
+              description="Order #8B-9122 by hovaness@bartamian.com"
+              time="2 hours ago"
+            />
+            <ActivityItem
+              title="Product Stock Alert"
+              description="Square Swallow Ring 18k is down to 3 pieces."
+              time="5 hours ago"
+              critical
+            />
+            <ActivityItem
+              title="Payment Confirmed"
+              description="Transaction PI_82711 processed via Stripe."
+              time="Yesterday"
+            />
           </div>
         </div>
 
         <div className="p-8 bg-gold/5 border border-gold/20 rounded-2xl flex flex-col justify-center items-center text-center space-y-4">
-           <Hammer className="w-12 h-12 text-gold animate-forge-pulse" />
-           <h3 className="font-spectral text-2xl italic font-bold text-gold">The Forge is Active</h3>
-           <p className="text-ivory/60 max-w-xs text-sm leading-relaxed">
-             System monitors are operational. Inventory is synced with Supabase Realtime.
-           </p>
+          <Hammer className="w-12 h-12 text-gold animate-forge-pulse" />
+          <h3 className="font-spectral text-2xl italic font-bold text-gold">The Forge is Active</h3>
+          <p className="text-ivory/60 max-w-xs text-sm leading-relaxed">
+            System monitors are operational. Inventory is synced with Supabase Realtime.
+          </p>
         </div>
       </div>
 
@@ -108,13 +110,13 @@ export default async function AdminDashboardPage() {
 
 function Hammer({ className }: { className?: string }) {
   return (
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className={className}
     >
       <path d="m15 12-8.5 8.5c-.83.83-2.17.83-3 0 0 0 0 0 0 0-.83-.83-.83-2.17 0-3L12 9" />

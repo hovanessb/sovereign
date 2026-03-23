@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import { Search, Eye, Truck, CheckCircle2, Clock } from "lucide-react";
 import { db } from "@/drizzle/action";

@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { MetalPurity } from "@/drizzle/schema";
 
 export interface CartItem {
   id: string; // The product UUID
@@ -15,13 +14,13 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
-  
+
   // Actions
   addItem: (item: Omit<CartItem, "quantity">) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
-  
+
   // UI Actions
   toggleCart: () => void;
   setIsOpen: (isOpen: boolean) => void;
@@ -67,7 +66,7 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ items: [] }),
 
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
-      
+
       setIsOpen: (isOpen: boolean) => set({ isOpen }),
     }),
     {
