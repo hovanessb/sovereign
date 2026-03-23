@@ -104,7 +104,7 @@ function StepCard({ step, index }: { step: ProcessStep; index: number }) {
     >
       {/* Step number */}
       <div className="
-        flex-shrink-0
+        shrink-0
         w-9 h-9
         border border-gold/25
         flex items-center justify-center
@@ -132,7 +132,7 @@ function StepCard({ step, index }: { step: ProcessStep; index: number }) {
 
       {/* Thumbnail */}
       <div className="
-        flex-shrink-0 relative
+        shrink-0 relative
         w-20 h-20 sm:w-24 sm:h-24
         overflow-hidden
         border border-gold-subtle
@@ -360,7 +360,7 @@ export default function ProcessGallery() {
                 font-spectral italic font-bold
                 text-3xl sm:text-4xl
                 text-transparent bg-clip-text bg-gold-linear
-                bg-[length:200%_auto]
+                bg-size-[200%_auto]
               ">
                 {stat.value}
               </p>

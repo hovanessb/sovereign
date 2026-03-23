@@ -88,12 +88,12 @@ function FilterBar({
             aria-selected={isActive}
             onClick={() => onChange(f)}
             className={`
-              flex-shrink-0
+              shrink-0
               px-4 py-2
               font-mono text-[10px] tracking-vault uppercase
               transition-all duration-300
               ${isActive
-                ? "bg-gold-linear bg-[length:200%_auto] text-obsidian shadow-gold-sm"
+                ? "bg-gold-linear bg-size-[200%_auto] text-obsidian shadow-gold-sm"
                 : "text-ash hover:text-ivory"
               }
             `}
@@ -152,7 +152,7 @@ function ProductCard({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  
+
   const [index, setIndex] = useState(0);
   const isOutOfStock = !product.isInfiniteStock && liveStock === 0;
   const isLowStock = !product.isInfiniteStock && liveStock > 0 && liveStock <= LOW_STOCK_THRESHOLD;
@@ -198,7 +198,7 @@ function ProductCard({
       "
     >
       {/* ── Image Slider (Infinite & Peeking) ─────────────────────────────── */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-obsidian-300 px-6 sm:px-0">
+      <div className="relative aspect-4/5 overflow-hidden bg-obsidian-300 px-6 sm:px-0">
         <motion.div
           animate={{ x: `calc(-${index * 100}% )` }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -217,8 +217,8 @@ function ProductCard({
         >
           {product.imageUrls.length > 0 ? (
             product.imageUrls.map((url, idx) => (
-              <div 
-                key={url} 
+              <div
+                key={url}
                 className="
                   relative 
                   min-w-full h-full 
@@ -357,7 +357,7 @@ function ProductCard({
             leading-tight
             group-hover:text-transparent
             group-hover:bg-clip-text group-hover:bg-gold-linear
-            group-hover:bg-[length:200%_auto]
+            group-hover:bg-size-[200%_auto]
             transition-all duration-500
           ">
             {product.name}
@@ -421,7 +421,7 @@ function ProductCard({
             text-[11px] tracking-vault uppercase
             border border-gold/30
             text-ivory
-            hover:bg-gold-linear hover:bg-[length:200%_auto]
+            hover:bg-gold-linear hover:bg-size-[200%_auto]
             hover:text-obsidian hover:border-transparent
             hover:shadow-gold-sm
             disabled:opacity-30 disabled:cursor-not-allowed
@@ -484,11 +484,11 @@ export default function Vault({ initialProducts, goldSpot, settings }: VaultProp
   const handleAddToCart = useCallback(
     (product: VaultProduct, dynamicPrice: number) => {
       addItem({
-        id:          product.id,
-        priceId:     product.priceId,
-        name:        product.name,
-        priceCents:  dynamicPrice,
-        imageUrl:    product.imageUrls[0] || undefined,
+        id: product.id,
+        priceId: product.priceId,
+        name: product.name,
+        priceCents: dynamicPrice,
+        imageUrl: product.imageUrls[0] || undefined,
         metalPurity: product.metalPurity,
       });
     },
@@ -612,7 +612,7 @@ export default function Vault({ initialProducts, goldSpot, settings }: VaultProp
         flex items-center gap-6
       ">
         <div className="flex-1 h-px bg-linear-to-r from-gold/30 via-gold/10 to-transparent" />
-        <span className="font-mono text-[9px] tracking-ultrawide text-gold/30 uppercase flex-shrink-0">
+        <span className="font-mono text-[9px] tracking-ultrawide text-gold/30 uppercase shrink-0">
           {filtered.length} {filtered.length === 1 ? "Piece" : "Pieces"} Available
         </span>
         <div className="flex-1 h-px bg-linear-to-l from-gold/30 via-gold/10 to-transparent" />
