@@ -29,7 +29,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       });
       setMessage("Pricing strategy updated successfully.");
       setTimeout(() => setMessage(""), 3000);
-    } catch (error) {
+    } catch {
       setMessage("Failed to update settings.");
     } finally {
       setLoading(false);

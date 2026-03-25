@@ -41,7 +41,6 @@ const connectionString =
  * during Next.js Hot Module Replacement (HMR) in development.
  */
 declare global {
-  // eslint-disable-next-line no-var
   var postgresClient: ReturnType<typeof postgres> | undefined;
 }
 

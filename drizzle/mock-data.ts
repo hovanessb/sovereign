@@ -3,8 +3,6 @@ import {
   categories,
   products,
   productImages,
-  metalPurityEnum,
-  finishEnum,
 } from "./schema";
 
 /**

@@ -12,7 +12,10 @@ export function CartDrawer() {
 
   // Hydration fix for Zustand + Next.js
   const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!isMounted) return null;
 

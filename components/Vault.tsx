@@ -20,7 +20,7 @@
  *   • Low-stock indicator: "Only N remaining" in gold when stock ≤ 3
  */
 
-import { useEffect, useState, useRef, useTransition, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { motion, useInView, type Variants } from "framer-motion";
 import { createClient } from "@supabase/supabase-js";
@@ -108,34 +108,8 @@ function FilterBar({
 
 // ─── Product Card ─────────────────────────────────────────────────────────────
 
-import { AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const IMAGE_VARIANTS: any = {
-  enter: (direction: number) => ({
-    x: direction > 0 ? "100%" : "-100%",
-    opacity: 0,
-    scale: 0.95
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      x: { type: "spring", stiffness: 300, damping: 30 },
-      opacity: { duration: 0.4 }
-    }
-  },
-  exit: (direction: number) => ({
-    x: direction < 0 ? "100%" : "-100%",
-    opacity: 0,
-    scale: 0.95,
-    transition: {
-      x: { type: "spring", stiffness: 300, damping: 30 },
-      opacity: { duration: 0.4 }
-    }
-  })
-};
 
 function ProductCard({
   product,
@@ -449,7 +423,6 @@ export default function Vault({ initialProducts, goldSpot, settings }: VaultProp
   );
   const [activeFilter, setActiveFilter] = useState<MetalPurity | "all">("all");
   const addItem = useCartStore((state) => state.addItem);
-  const [, startTransition] = useTransition();
 
   const headerRef = useRef<HTMLDivElement>(null);
   const isHeaderInView = useInView(headerRef, { once: true, margin: "-80px" });

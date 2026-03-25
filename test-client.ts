@@ -19,7 +19,7 @@ async function testClient() {
     const supabase = createClient(url, key);
     
     console.log("Client created. Attempting to subscribe to 'products' changes...");
-    const channel = supabase
+    supabase
       .channel("vault-inventory")
       .on(
         "postgres_changes",

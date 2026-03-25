@@ -2,12 +2,11 @@ export const dynamic = "force-dynamic";
 
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { Plus, Search, Edit3, Trash2, ExternalLink } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { db } from "@/drizzle/action";
-import { products, categories } from "@/drizzle/schema";
+import { products } from "@/drizzle/schema";
 import { formatPrice } from "@/lib/helpers";
-import { desc, eq } from "drizzle-orm";
+import { desc } from "drizzle-orm";
 
 import { ProductRowActions } from "./RowActions";
 

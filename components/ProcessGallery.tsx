@@ -303,7 +303,7 @@ export default function ProcessGallery() {
               text-ivory/90
               leading-snug
             ">
-              "We do not make jewelry. We forge sovereignty — one gram at a time."
+              &quot;We do not make jewelry. We forge sovereignty — one gram at a time.&quot;
             </p>
             <footer className="mt-3">
               <cite className="

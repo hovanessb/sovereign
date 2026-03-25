@@ -1,9 +1,9 @@
+import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // @ts-ignore - Turbopack root config for monorepo-like structures
   turbopack: {
-    root: "./",
+    root: path.resolve(process.cwd()),
   },
 };
 
