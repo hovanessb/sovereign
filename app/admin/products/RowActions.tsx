@@ -39,9 +39,9 @@ export function ProductRowActions({
       >
         {isPublished ? <Power className="w-4 h-4" /> : <PowerOff className="w-4 h-4" />}
       </button>
-      <button className="p-2 text-ivory/40 hover:text-white hover:bg-white/5 rounded-md transition-all">
+      <Link href={`/admin/products/${productId}/edit`} className="p-2 text-ivory/40 hover:text-white hover:bg-white/5 rounded-md transition-all">
         <Edit3 className="w-4 h-4" />
-      </button>
+      </Link>
       <button 
         onClick={handleDelete}
         className="p-2 text-ivory/40 hover:text-red-400 hover:bg-red-400/5 rounded-md transition-all"

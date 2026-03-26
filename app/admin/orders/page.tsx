@@ -1,16 +1,19 @@
 export const dynamic = "force-dynamic";
 
 import React from "react";
-import { Search, Eye, Truck, CheckCircle2, Clock } from "lucide-react";
-import { db } from "@/drizzle/action";
-import { orders } from "@/drizzle/schema";
+import Link from "next/link";
+import { Eye, Truck, CheckCircle2, Clock } from "lucide-react";
+import { getOrders } from "@/drizzle/data/orders";
 import { formatPrice } from "@/lib/helpers";
-import { desc } from "drizzle-orm";
+import { OrderSearch } from "@/components/admin/OrderSearch";
 
-export default async function AdminOrdersPage() {
-  const allOrders = await db.query.orders.findMany({
-    orderBy: [desc(orders.createdAt)],
-  });
+export default async function AdminOrdersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  const allOrders = await getOrders({ q });
 
   return (
     <div className="space-y-6">
@@ -20,16 +23,7 @@ export default async function AdminOrdersPage() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ivory/40" />
-          <input 
-            type="text" 
-            placeholder="Search orders (ID, email, name)..."
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-md text-sm text-ivory focus:outline-none focus:border-gold/50 transition-colors"
-          />
-        </div>
-      </div>
+      <OrderSearch initialQuery={q} />
 
       {/* Orders Table */}
       <div className="bg-white/2 border border-white/10 rounded-xl overflow-hidden">
@@ -73,9 +67,12 @@ export default async function AdminOrdersPage() {
                     <OrderStatusBadge status={order.status} />
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="p-2 text-ivory/40 hover:text-white hover:bg-white/5 rounded-md transition-all">
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="p-2 text-ivory/40 hover:text-white hover:bg-white/5 rounded-md transition-all inline-block"
+                    >
                       <Eye className="w-4 h-4" />
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))

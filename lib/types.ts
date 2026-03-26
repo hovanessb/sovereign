@@ -1,4 +1,4 @@
-import type { Product, SiteSettings } from "@/drizzle/schema";
+import type { Product, SiteSettings, MetalPurity, Finish } from "@/drizzle/schema";
 
 export interface VaultProduct extends Product {
   /** All image URLs for the product, ordered by position. */
@@ -39,4 +39,26 @@ export interface ProcessStep {
 export interface Stat {
   value: string;
   label: string;
+}
+
+// ─── Admin Types ──────────────────────────────────────────────────────────────
+
+export interface ProductFormData {
+  name: string;
+  slug: string;
+  description: string;
+  shortDesc?: string;
+  categoryId: string;
+  priceCents: number;
+  priceId: string;
+  compareAtCents?: number;
+  metalPurity: MetalPurity;
+  finish: Finish;
+  weightGrams?: string;
+  stockQuantity: number;
+  isInfiniteStock: boolean;
+  isFeatured: boolean;
+  isPublished: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
 }

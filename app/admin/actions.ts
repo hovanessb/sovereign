@@ -1,58 +1,68 @@
 "use server";
 
-import { db } from "@/drizzle/action";
-import { products, siteSettings } from "@/drizzle/schema";
-import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import type { ProductFormData } from "@/lib/types";
+
+// Import from the new Data Access Layer
+import * as productsData from "@/drizzle/data/products";
+import * as ordersData from "@/drizzle/data/orders";
+import * as settingsData from "@/drizzle/data/settings";
+
+export type { ProductFormData };
 
 export async function toggleProductPublication(id: string, isPublished: boolean) {
-  await db
-    .update(products)
-    .set({ isPublished, updatedAt: new Date() })
-    .where(eq(products.id, id));
-
+  await productsData.toggleProductPublication(id, isPublished);
   revalidatePath("/admin/products");
   revalidatePath("/vault");
 }
 
 export async function deleteProduct(id: string) {
-  // Note: productImages has cascade delete in schema
-  await db.delete(products).where(eq(products.id, id));
-
+  await productsData.deleteProduct(id);
   revalidatePath("/admin/products");
   revalidatePath("/vault");
 }
 
 export async function getSiteSettings() {
-  const settings = await db.query.siteSettings.findFirst();
-
-  if (!settings) {
-    // Initialize with defaults if none exist
-    const [newSettings] = await db.insert(siteSettings).values({
-      makingChargePerGram: 25,
-      marginMultiplier: "2.50",
-    }).returning();
-    return newSettings;
-  }
-
-  return settings;
+  return await settingsData.getSiteSettings();
 }
 
 export async function updateSiteSettings(data: {
   makingChargePerGram: number;
   marginMultiplier: string;
 }) {
-  const current = await getSiteSettings();
-
-  await db.update(siteSettings)
-    .set({
-      makingChargePerGram: data.makingChargePerGram,
-      marginMultiplier: data.marginMultiplier,
-      updatedAt: new Date(),
-    })
-    .where(eq(siteSettings.id, current.id));
-
+  await settingsData.updateSiteSettings(data);
   revalidatePath("/admin");
   revalidatePath("/");
+  return { success: true };
+}
+
+// ─── Product CRUD ─────────────────────────────────────────────────────────────
+
+export async function createProduct(data: ProductFormData) {
+  await productsData.createProduct(data);
+  revalidatePath("/admin/products");
+  revalidatePath("/vault");
+  redirect("/admin/products");
+}
+
+export async function updateProduct(id: string, data: ProductFormData) {
+  await productsData.updateProduct(id, data);
+  revalidatePath("/admin/products");
+  revalidatePath("/vault");
+  redirect("/admin/products");
+}
+
+// ─── Order Status ─────────────────────────────────────────────────────────────
+
+export async function updateOrderStatus(
+  orderId: string,
+  status: string,
+  trackingNumber?: string,
+  trackingCarrier?: string
+) {
+  await ordersData.updateOrderStatus(orderId, status, trackingNumber, trackingCarrier);
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${orderId}`);
   return { success: true };
 }

@@ -9,16 +9,14 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
-import { db } from "@/drizzle/action";
-import { products } from "@/drizzle/schema";
-import { eq, asc, desc } from "drizzle-orm";
+import { getPublishedProducts } from "@/drizzle/data/products";
+import { getSiteSettings } from "./admin/actions";
+import { getGoldSpotPrice } from "./api/actions/get-gold-spot";
 
 import Hero from "@/components/Hero";
 import ProcessGallery from "@/components/ProcessGallery";
 import Vault from "@/components/Vault";
 import type { VaultProduct } from "@/lib/types";
-import { getGoldSpotPrice } from "./api/actions/get-gold-spot";
-import { getSiteSettings } from "./admin/actions";
 
 // ─── Page Metadata ────────────────────────────────────────────────────────────
 
@@ -28,22 +26,14 @@ export const metadata: Metadata = {
 
 // ─── Data Fetching ────────────────────────────────────────────────────────────
 
-async function getPublishedProducts(): Promise<VaultProduct[]> {
+async function getVaultProducts(): Promise<VaultProduct[]> {
   try {
-    const results = await db.query.products.findMany({
-      where: eq(products.isPublished, true),
-      with: {
-        images: {
-          orderBy: (images, { asc }) => [asc(images.position)],
-        },
-      },
-      orderBy: [desc(products.isFeatured), asc(products.sortOrder)],
-    });
+    const results = await getPublishedProducts();
 
     return results.map(p => ({
       ...p,
-      imageUrls: p.images.map(img => img.url)
-    }));
+      imageUrls: p.images.map((img: any) => img.url)
+    })) as VaultProduct[];
   } catch (error) {
     console.error("[BARTAMIAN] Failed to fetch products:", error);
     return [];
@@ -55,7 +45,7 @@ async function getPublishedProducts(): Promise<VaultProduct[]> {
 
 export default async function HomePage() {
   const [initialProducts, goldSpotData, settings] = await Promise.all([
-    getPublishedProducts(),
+    getVaultProducts(),
     getGoldSpotPrice(),
     getSiteSettings(),
   ]);

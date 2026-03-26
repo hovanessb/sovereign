@@ -2,25 +2,20 @@ export const dynamic = "force-dynamic";
 
 import React from "react";
 import Image from "next/image";
-import { Plus, Search } from "lucide-react";
-import { db } from "@/drizzle/action";
-import { products } from "@/drizzle/schema";
+import Link from "next/link";
+import { Plus } from "lucide-react";
+import { getProducts } from "@/drizzle/data/products";
 import { formatPrice } from "@/lib/helpers";
-import { desc } from "drizzle-orm";
-
 import { ProductRowActions } from "./RowActions";
+import { ProductSearch } from "@/components/admin/ProductSearch";
 
-export default async function AdminProductsPage() {
-  const allProducts = await db.query.products.findMany({
-    with: {
-      category: true,
-      images: {
-        limit: 1,
-        orderBy: (images, { asc }) => [asc(images.position)],
-      },
-    },
-    orderBy: [desc(products.createdAt)],
-  });
+export default async function AdminProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string }>;
+}) {
+  const { q } = await searchParams;
+  const allProducts = await getProducts({ q });
 
   return (
     <div className="space-y-6">
@@ -29,23 +24,17 @@ export default async function AdminProductsPage() {
           <h2 className="font-spectral text-2xl italic font-bold">The Vault Management</h2>
           <p className="text-sm text-ivory/50 mt-1">Configure your sovereign inventory and pricing.</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-gold text-obsidian font-bold text-xs uppercase tracking-widest hover:bg-gold-bright transition-colors">
+        <Link
+          href="/admin/products/new"
+          className="flex items-center gap-2 px-4 py-2 bg-gold text-obsidian font-bold text-xs uppercase tracking-widest hover:bg-gold-bright transition-colors"
+        >
           <Plus className="w-4 h-4" />
           Add New Piece
-        </button>
+        </Link>
       </div>
 
       {/* Toolbar */}
-      <div className="flex gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ivory/40" />
-          <input 
-            type="text" 
-            placeholder="Search the vault..."
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-md text-sm text-ivory focus:outline-none focus:border-gold/50 transition-colors"
-          />
-        </div>
-      </div>
+      <ProductSearch initialQuery={q} />
 
       {/* Products Table */}
       <div className="bg-white/2 border border-white/10 rounded-xl overflow-hidden">

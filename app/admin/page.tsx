@@ -2,49 +2,44 @@ export const dynamic = "force-dynamic";
 
 import React from "react";
 import { Package, ShoppingCart, TrendingUp, AlertCircle } from "lucide-react";
-import { db } from "@/drizzle/action";
-import { products, orders } from "@/drizzle/schema";
-import { count, eq, sql } from "drizzle-orm";
+import { getProductCount, getLowStockCount } from "@/drizzle/data/products";
+import { getOrderCount, getTotalRevenue } from "@/drizzle/data/orders";
 import { formatPrice } from "@/lib/helpers";
-
-import { SettingsForm } from "@/components/SettingsForm";
 import { getSiteSettings } from "@/app/admin/actions";
+import { SettingsForm } from "@/components/SettingsForm";
 
 export default async function AdminDashboardPage() {
-  const [productCount] = await db.select({ value: count() }).from(products);
-  const [orderCount] = await db.select({ value: count() }).from(orders);
+  const productCount = await getProductCount();
+  const orderCount = await getOrderCount();
   const settings = await getSiteSettings();
-
-  // Quick revenue calculation
-  const [revenue] = await db.select({
-    total: sql<number>`COALESCE(SUM(total_cents), 0)`
-  }).from(orders).where(eq(orders.status, "paid"));
+  const revenueTotal = await getTotalRevenue();
+  const lowStockCount = await getLowStockCount();
 
   const stats = [
     {
       label: "Total Products",
-      value: productCount.value,
+      value: productCount,
       icon: <Package className="w-5 h-5" />,
       color: "text-blue-400",
       bg: "bg-blue-400/10",
     },
     {
       label: "Pending Orders",
-      value: orderCount.value,
+      value: orderCount,
       icon: <ShoppingCart className="w-5 h-5" />,
       color: "text-amber-400",
       bg: "bg-amber-400/10",
     },
     {
       label: "Total Revenue",
-      value: formatPrice(revenue.total as number),
+      value: formatPrice(revenueTotal),
       icon: <TrendingUp className="w-5 h-5" />,
       color: "text-emerald-400",
       bg: "bg-emerald-400/10",
     },
     {
       label: "Low Stock Items",
-      value: "2", // Hardcoded for now, would filter in prod
+      value: lowStockCount,
       icon: <AlertCircle className="w-5 h-5" />,
       color: "text-rose-400",
       bg: "bg-rose-400/10",
