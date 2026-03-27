@@ -298,6 +298,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
               <label className={labelClass}>Weight (grams)</label>
               <input
                 type="text"
+                required={true}
                 value={weightGrams}
                 onChange={(e) => setWeightGrams(e.target.value)}
                 className={inputClass}
