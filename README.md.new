@@ -14,7 +14,7 @@ The curated heart of BARTAMIAN. An interactive gallery showcasing every piece th
 - **Real-time Inventory**: Powered by Supabase Realtime for instant stock updates.
 - **Premium Visualization**: High-fidelity image sliders and cinematic product cards.
 
-### DYNAMIC PRICING ENGINE
+### DYNAME PRICING ENGINE
 Proprietary luxury pricing logic that integrates real-time market data:
 - **Spot Price Integration**: Automatically fetches the current gold spot price ($/oz).
 - **Artisan Calculation**: Dynamic retail pricing based on metal purity (9K-24K), precise gram weight, and customizable making charges.
