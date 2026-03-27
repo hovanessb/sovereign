@@ -5,31 +5,15 @@ import { Save, RefreshCw, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { createProduct, updateProduct } from "@/app/admin/actions";
 import type { ProductFormData } from "@/lib/types";
-import type { Category, MetalPurity, Finish } from "@/drizzle/schema";
+import type { Category, MetalPurity, Finish, Product, ProductImage } from "@/drizzle/schema";
+import { ImageUpload } from "./ImageUpload";
 
 interface ProductFormProps {
   categories: Category[];
-  initialData?: {
-    id: string;
-    name: string;
-    slug: string;
-    description: string;
-    shortDesc: string | null;
-    categoryId: string;
-    priceCents: number;
-    priceId: string;
-    compareAtCents: number | null;
-    metalPurity: MetalPurity;
-    finish: Finish;
-    weightGrams: string | null;
-    stockQuantity: number;
-    isInfiniteStock: boolean;
-    isFeatured: boolean;
-    isPublished: boolean;
-    metaTitle: string | null;
-    metaDescription: string | null;
-  };
+  initialData?: Product & { images: ProductImage[] };
 }
+
+type FormImage = ProductFormData["images"][number];
 
 const METAL_PURITIES: MetalPurity[] = ["9k", "14k", "18k", "22k", "24k"];
 const FINISHES: Finish[] = ["polished", "brushed", "hammered", "sandblasted", "oxidized"];
@@ -62,6 +46,27 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
   const [isPublished, setIsPublished] = useState(initialData?.isPublished ?? false);
   const [metaTitle, setMetaTitle] = useState(initialData?.metaTitle ?? "");
   const [metaDescription, setMetaDescription] = useState(initialData?.metaDescription ?? "");
+  const [images, setImages] = useState<FormImage[]>(
+    initialData?.images?.map(img => ({
+      url: img.url,
+      altText: img.altText ?? "",
+      position: img.position,
+      width: img.width ?? undefined,
+      height: img.height ?? undefined,
+    })) ?? []
+  );
+
+  React.useEffect(() => {
+    if (isEdit && initialData.images) {
+      setImages(initialData.images.map(img => ({
+        url: img.url,
+        altText: img.altText ?? "",
+        position: img.position,
+        width: img.width ?? undefined,
+        height: img.height ?? undefined,
+      })));
+    }
+  }, [isEdit, initialData?.images]); // added .images to dependencies for stability
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -73,6 +78,7 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    console.log("[ProductForm] Submitting with images:", images);
     setLoading(true);
     setError("");
 
@@ -94,10 +100,11 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
       isPublished,
       metaTitle: metaTitle || undefined,
       metaDescription: metaDescription || undefined,
+      images,
     };
 
     try {
-      if (isEdit) {
+      if (isEdit && initialData) {
         await updateProduct(initialData.id, formData);
       } else {
         await createProduct(formData);
@@ -203,6 +210,12 @@ export function ProductForm({ categories, initialData }: ProductFormProps) {
               ))}
             </select>
           </div>
+        </section>
+
+        {/* Media */}
+        <section className="p-8 bg-white/2 border border-white/10 rounded-2xl space-y-6 text-ivory">
+          <h3 className="font-spectral text-lg italic font-semibold text-ivory/80">Media</h3>
+          <ImageUpload images={images} onChange={setImages} />
         </section>
 
         {/* Commerce */}

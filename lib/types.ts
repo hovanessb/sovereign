@@ -61,4 +61,11 @@ export interface ProductFormData {
   isPublished: boolean;
   metaTitle?: string;
   metaDescription?: string;
+  images: {
+    url: string;
+    altText?: string;
+    position: number;
+    width?: number;
+    height?: number;
+  }[];
 }

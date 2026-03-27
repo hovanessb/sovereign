@@ -32,7 +32,7 @@ async function getVaultProducts(): Promise<VaultProduct[]> {
 
     return results.map(p => ({
       ...p,
-      imageUrls: p.images.map((img: any) => img.url)
+      imageUrls: p.images.map((img: { url: string }) => img.url)
     })) as VaultProduct[];
   } catch (error) {
     console.error("[BARTAMIAN] Failed to fetch products:", error);

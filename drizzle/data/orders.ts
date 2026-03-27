@@ -44,14 +44,16 @@ export async function getTotalRevenue() {
   return (result.total as number) || 0;
 }
 
+import type { OrderStatus } from "../schema";
+
 export async function updateOrderStatus(
   orderId: string,
-  status: string,
+  status: OrderStatus,
   trackingNumber?: string,
   trackingCarrier?: string
 ) {
   const now = new Date();
-  const updateData: Record<string, any> = {
+  const updateData: Partial<typeof orders.$inferInsert> = {
     status,
     updatedAt: now,
   };

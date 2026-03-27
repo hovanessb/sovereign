@@ -37,14 +37,16 @@ const STATUS_COLORS: Record<string, string> = {
   refunded: "bg-red-400/10 text-red-400",
 };
 
+import type { OrderStatus } from "@/drizzle/schema";
+
 export function OrderStatusUpdater({
   orderId,
   currentStatus,
 }: {
   orderId: string;
-  currentStatus: string;
+  currentStatus: OrderStatus;
 }) {
-  const [status, setStatus] = useState(currentStatus);
+  const [status, setStatus] = useState<OrderStatus>(currentStatus);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [trackingCarrier, setTrackingCarrier] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -74,7 +76,7 @@ export function OrderStatusUpdater({
       <div className="space-y-3">
         <select
           value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          onChange={(e) => setStatus(e.target.value as OrderStatus)}
           className={inputClass}
         >
           {STATUSES.map((s) => (

@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
 import { config } from "dotenv";
+import { supabase } from "./lib/supabase";
 
 config({ path: ".env.local" });
 
@@ -16,8 +16,7 @@ async function testClient() {
   }
 
   try {
-    const supabase = createClient(url, key);
-    
+
     console.log("Client created. Attempting to subscribe to 'products' changes...");
     supabase
       .channel("vault-inventory")
@@ -35,7 +34,7 @@ async function testClient() {
       .subscribe((status, err) => {
         console.log("Subscribe status:", status);
         if (err) console.error("Subscribe error:", err);
-        
+
         if (status === "SUBSCRIBED" || status === "TIMED_OUT" || status === "CLOSED" || status === "CHANNEL_ERROR") {
           setTimeout(() => process.exit(status === "SUBSCRIBED" ? 0 : 1), 1000);
         }

@@ -2,7 +2,6 @@ import { db } from "../action";
 import { sql } from "drizzle-orm";
 
 export type CustomerStats = {
-  [key: string]: any;
   guest_email: string | null;
   shipping_name: string | null;
   shipping_city: string | null;

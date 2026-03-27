@@ -1,5 +1,5 @@
 import { db } from "../action";
-import { products, categories } from "../schema";
+import { products, categories, productImages } from "../schema";
 import { count, eq, and, lte, ilike, or, desc, asc } from "drizzle-orm";
 import type { ProductFormData } from "@/lib/types";
 
@@ -56,30 +56,10 @@ export async function getCategories() {
 }
 
 export async function createProduct(data: ProductFormData) {
-  return await db.insert(products).values({
-    name: data.name,
-    slug: data.slug,
-    description: data.description,
-    shortDesc: data.shortDesc || null,
-    categoryId: data.categoryId,
-    priceCents: data.priceCents,
-    priceId: data.priceId,
-    compareAtCents: data.compareAtCents || null,
-    metalPurity: data.metalPurity,
-    finish: data.finish,
-    weightGrams: data.weightGrams || null,
-    stockQuantity: data.stockQuantity,
-    isInfiniteStock: data.isInfiniteStock,
-    isFeatured: data.isFeatured,
-    isPublished: data.isPublished,
-    metaTitle: data.metaTitle || null,
-    metaDescription: data.metaDescription || null,
-  }).returning();
-}
-
-export async function updateProduct(id: string, data: ProductFormData) {
-  return await db.update(products)
-    .set({
+  console.log(`[DAL] Creating product with ${data.images?.length || 0} images`);
+  
+  return await db.transaction(async (tx) => {
+    const result = await tx.insert(products).values({
       name: data.name,
       slug: data.slug,
       description: data.description,
@@ -97,10 +77,73 @@ export async function updateProduct(id: string, data: ProductFormData) {
       isPublished: data.isPublished,
       metaTitle: data.metaTitle || null,
       metaDescription: data.metaDescription || null,
-      updatedAt: new Date(),
-    })
-    .where(eq(products.id, id))
-    .returning();
+    }).returning();
+
+    const product = result[0];
+
+    if (data.images && data.images.length > 0) {
+      await tx.insert(productImages).values(
+        data.images.map((img) => ({
+          productId: product.id,
+          url: img.url,
+          altText: img.altText || null,
+          position: img.position,
+          width: img.width || null,
+          height: img.height || null,
+        }))
+      );
+    }
+
+    return result;
+  });
+}
+
+export async function updateProduct(id: string, data: ProductFormData) {
+  console.log(`[DAL] Updating product ${id} with ${data.images?.length || 0} images`);
+
+  return await db.transaction(async (tx) => {
+    const result = await tx.update(products)
+      .set({
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        shortDesc: data.shortDesc || null,
+        categoryId: data.categoryId,
+        priceCents: data.priceCents,
+        priceId: data.priceId,
+        compareAtCents: data.compareAtCents || null,
+        metalPurity: data.metalPurity,
+        finish: data.finish,
+        weightGrams: data.weightGrams || null,
+        stockQuantity: data.stockQuantity,
+        isInfiniteStock: data.isInfiniteStock,
+        isFeatured: data.isFeatured,
+        isPublished: data.isPublished,
+        metaTitle: data.metaTitle || null,
+        metaDescription: data.metaDescription || null,
+        updatedAt: new Date(),
+      })
+      .where(eq(products.id, id))
+      .returning();
+
+    // Sync images: Delete existing and re-insert
+    await tx.delete(productImages).where(eq(productImages.productId, id));
+
+    if (data.images && data.images.length > 0) {
+      await tx.insert(productImages).values(
+        data.images.map((img) => ({
+          productId: id,
+          url: img.url,
+          altText: img.altText || null,
+          position: img.position,
+          width: img.width || null,
+          height: img.height || null,
+        }))
+      );
+    }
+
+    return result;
+  });
 }
 
 export async function deleteProduct(id: string) {

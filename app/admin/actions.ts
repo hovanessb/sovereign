@@ -8,8 +8,8 @@ import type { ProductFormData } from "@/lib/types";
 import * as productsData from "@/drizzle/data/products";
 import * as ordersData from "@/drizzle/data/orders";
 import * as settingsData from "@/drizzle/data/settings";
-
-export type { ProductFormData };
+import { supabase } from "@/lib/supabase";
+import type { OrderStatus } from "@/drizzle/schema";
 
 export async function toggleProductPublication(id: string, isPublished: boolean) {
   await productsData.toggleProductPublication(id, isPublished);
@@ -57,7 +57,7 @@ export async function updateProduct(id: string, data: ProductFormData) {
 
 export async function updateOrderStatus(
   orderId: string,
-  status: string,
+  status: OrderStatus,
   trackingNumber?: string,
   trackingCarrier?: string
 ) {
@@ -65,4 +65,30 @@ export async function updateOrderStatus(
   revalidatePath("/admin/orders");
   revalidatePath(`/admin/orders/${orderId}`);
   return { success: true };
+}
+
+// ─── Media Upload ─────────────────────────────────────────────────────────────
+
+export async function uploadProductImage(formData: FormData) {
+  const file = formData.get("file") as File;
+  if (!file) throw new Error("No file provided");
+
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+  const filePath = `products/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("product-images")
+    .upload(filePath, file);
+
+  if (uploadError) {
+    console.error("Upload error:", uploadError);
+    throw uploadError;
+  }
+
+  const { data: { publicUrl } } = supabase.storage
+    .from("product-images")
+    .getPublicUrl(filePath);
+
+  return { url: publicUrl };
 }

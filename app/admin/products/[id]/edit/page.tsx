@@ -21,7 +21,7 @@ export default async function EditProductPage({
   return (
     <ProductForm
       categories={allCategories}
-      initialData={product as any}
+      initialData={product}
     />
   );
 }
